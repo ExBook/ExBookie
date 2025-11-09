@@ -1265,8 +1265,7 @@
 			\end{tabularx}
 		}
 	}%
-	\unskip \unskip (
-)   
+	\unskip \unskip
 % \fi
 }
 
@@ -1312,8 +1311,7 @@
 			\end{tabularx}
 		}%
 	}
-	\unskip \unskip(
-)  
+	\unskip \unskip
 %  \fi 
 }
 
