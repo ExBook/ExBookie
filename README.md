@@ -174,27 +174,38 @@ ExBook 提供4种经典颜色和8种个性颜色。
    
    命令选项：
    * `\qitem["text1"][text2]`，`"text1"`会出现在题目编号前缀的前面，`"text2"`会出现在题目编号后缀的后面
-4. 小问环境
+  
+4. 解析环境
+    ```latex
+    \begin{analysis}[\underline{答案}：]
+        答案内容     
+    \end{analysis}
+   ```
+   
+   环境选项：
+   * `\begin{analysis}[text1]`，`"text1"`：解析/答案内容的前缀
+
+5. 小问环境
    ```latex
     \begin{subqitems}
             \subqitem 第一小问
             \subqitem 第二小问
     \end{subqitems}
    ```
-5. 选择题选项命令
+6. 选择题选项命令
    ```latex
     \threechoices{选项内容}{选项内容}{选项内容}         % 三个选项
     \fourchoices{选项内容}{选项内容}{选项内容}{选项内容}        % 四个选项
     \fivechoices{选项内容}{选项内容}{选项内容}{选项内容}{选项内容}      % 五个选项
     \sixchoices{选项内容}{选项内容}{选项内容}{选项内容}{选项内容}{选项内容}{选项内容}   % 六个选项
    ```
-6. 代码高亮环境
+7. 代码高亮环境
    ```latex
    \begin{lstlisting}
     此处输入代码
    \end{lstlisting}
    ```
-7. 其他命令
+8. 其他命令
    * 空括号（英文和中文）
     ```latex
     \blankbox % 中文空括号
