@@ -1064,16 +1064,20 @@
 %                         *****************
 %                         **   题目相关   **
 %                         *****************
+\makeatletter % 开启@命令定义权限（关键：添加此行）
 \newcounter{QuestionCounter}
 
 \newif\if@resetcounter
 \newif\if@showcounter
+\newif\if@showanalysis % 解析显示开关（全局生效，由qitems环境控制）
 
 \@resetcountertrue 
 \@showcountertrue   
+\@showanalysisfalse
 
 \define@key{qitems}{unreset}[true]{\@resetcounterfalse} 
 \define@key{qitems}{unshow}[true]{\@showcounterfalse} 
+\define@key{qitems}{showanalysis}[true]{\@showanalysistrue}
 \define@key{qitems}{prefix}[]{\def\@prefix{#1}} 
 \define@key{qitems}{suffix}[.]{\def\@suffix{#1}} 
 \define@key{qitems}{optprefix}[]{\def\@optprefix{#1}} 
@@ -1128,6 +1132,60 @@
     \fi
 }
 
+% 解析环境（完全受qitems环境的开关控制）
+\newenvironment{analysis}[1][解析：]{
+    \par
+    \if@showanalysis % 读取qitems环境设置的开关状态
+        \vspace{2mm}
+        \if@darkmode
+            \begin{tcolorbox}[
+                left=2mm,
+                right=2mm,
+                top=2mm,
+                bottom=1mm,
+                boxrule=0mm,
+                leftrule=2pt, % 竖线宽度
+                colframe=themeColor!60,
+                arc=2mm, 
+                outer arc=2mm,
+                opacityback=0.05,
+                opacityframe=0.05, % 边框透明度
+                nobeforeafter
+            ]
+            \fontsize{11}{0}
+            \textbf{ \color{white}\kaishu#1 } % 自定义前缀
+            \kaishu \color{white!80}
+            \ignorespaces
+        \else
+            \begin{tcolorbox}[
+                left=2mm,
+                right=2mm,
+                top=2mm,
+                bottom=1mm,
+                boxrule=0mm,
+                leftrule=2pt, % 竖线宽度
+                colback=themeColor!5,
+                colframe=themeColor,
+                arc=2mm, 
+                outer arc=2mm,
+                nobeforeafter
+            ]
+            \fontsize{11}{0}
+            \textbf{ \color{themeColor}\kaishu #1 } % 自定义前缀
+            \kaishu
+            \ignorespaces
+        \fi
+    \else
+        \setbox0=\vbox\bgroup
+    \fi
+}{
+    \if@showanalysis
+        \end{tcolorbox}
+        \par 
+    \else
+        \egroup
+    \fi
+}
 
 
 % 定义小问环境

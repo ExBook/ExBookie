@@ -1,5 +1,5 @@
 % 使用 ExBook 文档类，并传递选项
-\documentclass[standard]{ExBook} 
+\documentclass[compact]{ExBook} 
 
 
 \begin{document}
@@ -25,13 +25,13 @@
 \subsection{文字录入型做题本第一章第1节}\qanswerloc{10}
 \autotilte[l]{自由标题}{\qanswerloc{10}}
 
-\begin{qitems}
+\begin{qitems}[showanalysis]
 
     \begin{bbox}
         \qitem 设$f(x)$满足$2f(x)+f(1-x)=x^2 abc$，则$ \displaystyle\sum \limits_{n}^{0}f(x)=\blankline.$
-        \begin{solution}
-            答案：$\displaystyle\sum \limits_{n}^{0}f(x)=x^2$
-        \end{solution}
+        \begin{analysis}
+            $\displaystyle\sum \limits_{n}^{0}f(x)=x^2$
+        \end{analysis}
     \end{bbox}
     
 
@@ -41,9 +41,9 @@
         x+2, & x\geqslant0, \\
         x-1, & x<0,  
         \end{cases}$，则$g[f(x)]= \blankline$.
-        \begin{solution}
-            解：$x^2+2x+1=(x+1)^2$，所以$f(x)=2x+|x+1|$
-            
+        \begin{analysis}[\underline{答案}：]
+            $x^2+2x+1=(x+1)^2$，所以$f(x)=2x+|x+1|$
+
             当$x\geq -1$时，$f(x)=2x+(x+1)=3x+1$,
             当$x<-1$时，$f(x)=2x-(x+1)=x-1$.
             
@@ -56,7 +56,7 @@
             3x+3, & x\geq -1 \\
             x-2, & x<-1
             \end{cases}$
-        \end{solution}
+        \end{analysis}
     \end{bbox}
 
     \begin{bbox}
