@@ -45,6 +45,9 @@
 % 是否显示题目答案
 \newif\if@enableSolution  \@enableSolutionfalse
 
+\newif\if@showanalysis   \@showanalysisfalse% 解析显示开关（全局生效，由qitems环境控制）
+\DeclareOption{analysis}{\@showanalysistrue}
+
 % 定义默认页面格式
 \def\@pageformat{standard}
 \newcommand{\myPageFormat}{1}
@@ -1069,11 +1072,11 @@
 
 \newif\if@resetcounter
 \newif\if@showcounter
-\newif\if@showanalysis % 解析显示开关（全局生效，由qitems环境控制）
+% \newif\if@showanalysis % 解析显示开关（全局生效，由qitems环境控制）
 
 \@resetcountertrue 
 \@showcountertrue   
-\@showanalysisfalse
+% \@showanalysisfalse
 
 \define@key{qitems}{unreset}[true]{\@resetcounterfalse} 
 \define@key{qitems}{unshow}[true]{\@showcounterfalse} 
