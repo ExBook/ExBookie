@@ -4,12 +4,19 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{ExBook}[\filedate\space Version \fileversion\space by
  MA WEI JIAN]
- 
- % adobe 使用adobe字体
- % ubuntu 使用ubuntu字体
- % windows 使用windows字体
- % fandol 使用fandol字体，随texlive默认安装
- % mac 使用mac字体
+
+% ============================================================
+% ExBook —— 考研刷题册 LaTeX 文档类
+%
+% 核心机制：\myPageFormat 取 0-5，在 \ifcase 分支中切
+% 换 6 种页面布局（紧凑/标准/横Pad/宽松/单题/竖Pad）。
+% 每种布局定义自己的 geometry、maketitle、页眉页脚和 bbox。
+%
+% 用户配置通过 config.tex 中的 \XXX{...} 命令完成，这些
+% 命令将值存入 \ExBook@value@XXX 宏供类内部读取。
+% ============================================================
+
+% 字体集选项：适配不同操作系统的中文字体
 
 \newcommand\@fontset{fandol} 
 \DeclareOption{adobe}{\renewcommand\@fontset{adobe}}
@@ -48,17 +55,18 @@
 \newif\if@showanalysis   \@showanalysisfalse% 解析显示开关（全局生效，由qitems环境控制）
 \DeclareOption{analysis}{\@showanalysistrue}
 
-% 定义默认页面格式
+% 默认使用 A4 标准版布局
 \def\@pageformat{standard}
 \newcommand{\myPageFormat}{1}
 
-% 定义选项，每个选项对应一个字符串值，并设置 \myPageFormat 的值
-\DeclareOption{compact}{\def\@pageformat{compact}\def\myPageFormat{0}}  
-\DeclareOption{standard}{\def\@pageformat{standard}\def\myPageFormat{1}} 
-\DeclareOption{padl}{\def\@pageformat{padl}\def\myPageFormat{2}}  
-\DeclareOption{loose}{\def\@pageformat{loose}\def\myPageFormat{3}}  
-\DeclareOption{single}{\def\@pageformat{single}\def\myPageFormat{4}}  
-\DeclareOption{padp}{\def\@pageformat{padp}\def\myPageFormat{5}}  
+% 6 种页面布局选项，每个选项同时设置字符串名和 \myPageFormat 数值
+% \myPageFormat 在下方的 \ifcase 分支中驱动页面几何/封面/页眉切换
+\DeclareOption{compact}{\def\@pageformat{compact}\def\myPageFormat{0}}
+\DeclareOption{standard}{\def\@pageformat{standard}\def\myPageFormat{1}}
+\DeclareOption{padl}{\def\@pageformat{padl}\def\myPageFormat{2}}
+\DeclareOption{loose}{\def\@pageformat{loose}\def\myPageFormat{3}}
+\DeclareOption{single}{\def\@pageformat{single}\def\myPageFormat{4}}
+\DeclareOption{padp}{\def\@pageformat{padp}\def\myPageFormat{5}}
 
 % 加载基础类
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
@@ -73,7 +81,7 @@
 \RequirePackage{xcolor,graphicx,caption} % 彩色、图片、图释
 \RequirePackage{geometry,fancyhdr} % 纸张、边距、页眉、页脚
 \RequirePackage{etoolbox} 
-\RequirePackage{amsmath,amsmath,amssymb} % ams数学相关
+\RequirePackage{amsmath,amssymb} % ams数学相关
 \RequirePackage{fourier}
 % \RequirePackage{mathpazo}
 % \RequirePackage{mathptmx}
@@ -94,10 +102,9 @@
 \RequirePackage{lastpage} 
 \RequirePackage{titling} 
 \RequirePackage{adjustbox} 
-\RequirePackage{fontawesome5} 
-\RequirePackage{multicol} 
-\RequirePackage{bm} 
-\RequirePackage{fontawesome5} 
+\RequirePackage{fontawesome5}
+\RequirePackage{multicol}
+\RequirePackage{bm}
 \RequirePackage{graphicx} 
 \RequirePackage{pgffor}    % 用于循环
 \RequirePackage{xkeyval}
@@ -141,56 +148,26 @@
 \newcommand{\isfj}{isfj}
 \newcommand{\enfj}{enfj}
  
-% 设置颜色命令
+% 颜色值定义（查表法，避免 \ifx 长链）
+\def\themeColor@blue{015697}
+\def\themeColor@green{01847c}
+\def\themeColor@purple{61589b}
+\def\themeColor@orange{EA4C0E}
+\def\themeColor@infj{3b4676}
+\def\themeColor@enfp{d58a05}
+\def\themeColor@infp{3b6079}
+\def\themeColor@esfp{d86b09}
+\def\themeColor@intj{38558f}
+\def\themeColor@entp{8c2b2b}
+\def\themeColor@isfj{4d417e}
+\def\themeColor@enfj{e15715}
+
+% 设置主题颜色
 \newcommand{\setThemeColor}[1]{%
-    \ifx#1\blue
-    \definecolor{themeColor}{HTML}{015697} % 自定义颜色 蓝色
+    \ifcsname themeColor@#1\endcsname
+        \definecolor{themeColor}{HTML}{\csname themeColor@#1\endcsname}%
     \else
-    \ifx#1\green
-    \definecolor{themeColor}{HTML}{01847c} % 自定义颜色 绿色
-    \else
-    \ifx#1\purple
-    \definecolor{themeColor}{HTML}{61589b} % 自定义颜色 紫色
-    \else
-    \ifx#1\orange
-    \definecolor{themeColor}{HTML}{EA4C0E} % 自定义颜色 橙色
-    \else
-    \ifx#1\infj
-    \definecolor{themeColor}{HTML}{3b4676} % 自定义颜色 infj
-    \else
-    \ifx#1\enfp
-    \definecolor{themeColor}{HTML}{d58a05} % 自定义颜色 enfp
-    \else
-    \ifx#1\infp
-    \definecolor{themeColor}{HTML}{3b6079} % 自定义颜色 infp
-    \else
-    \ifx#1\esfp
-    \definecolor{themeColor}{HTML}{d86b09} % 自定义颜色 esfp
-    \else
-    \ifx#1\intj
-    \definecolor{themeColor}{HTML}{38558f} % 自定义颜色 intj
-    \else
-    \ifx#1\entp
-    \definecolor{themeColor}{HTML}{8c2b2b} % 自定义颜色 entp
-    \else
-    \ifx#1\isfj
-    \definecolor{themeColor}{HTML}{4d417e} % 自定义颜色 isfj
-    \else
-    \ifx#1\enfj
-    \definecolor{themeColor}{HTML}{e15715} % 自定义颜色 enfj
-    \else
-    \definecolor{themeColor}{HTML}{015697} % 自定义颜色 蓝色
-    \fi
-    \fi
-    \fi
-    \fi
-    \fi
-    \fi
-    \fi
-    \fi
-    \fi
-    \fi
-    \fi
+        \definecolor{themeColor}{HTML}{015697}% 默认蓝色
     \fi
 }
 
@@ -280,7 +257,7 @@
 \newcommand\Rhead[1]{\def\ExBook@value@Rhead{\textbf{#1}}}
 \newcommand\LheadC[1]{\def\ExBook@value@LheadC{\textbf{#1}}}
 \newcommand\TextWater[1]{\def\ExBook@value@TextWater{\textcolor{black!38}{\selectfont #1}}}
-\newcommand{\textwater}{\def\ExBook@value@TextWater}
+\newcommand{\textwater}{\ExBook@value@TextWater} % 渲染水印文本（区别于 \TextWater 用于设置）
 \newcommand\WaterImg[1]{\def\ExBook@value@waterImg{#1}}
 \newcommand\CoverImg[1]{\def\ExBook@value@coverImg{#1}}
 \newcommand\OnlineCheckUrl[1]{\def\ExBook@value@onlineCheckUrl{#1}}
@@ -348,11 +325,12 @@
   \thispagestyle{emptyheaderfooter}
 }
 
-% 插入图片命令，参数1为缩放比例，参数2为对齐方式，参数3为图片路径，
-\newcommand{\imgin}[3][0.38]{ % 默认缩放比例为 1.0
+% 插图命令：\imgin[缩放]{对齐}{路径}
+% 对齐参数为空时默认居中，l=左对齐，r=右对齐
+\newcommand{\imgin}[3][0.38]{%
     \par
     \begin{minipage}[t]{1.0\textwidth}
-        \ifx&#2& % 判断是否有对齐参数
+        \ifx&#2& % TeX 惯用 idiom：检测 #2 是否为空（\ifx 比较 #2 与 & 之后的 &）
             \centering
         \else
             \ifx#2l % 左对齐
@@ -369,10 +347,11 @@
     \end{minipage}
 }
 
+% 自由标题：\autotilte[对齐]{标题}{副标题}，对齐默认居中
 \newcommand{\autotilte}[3][]{
     \par
 
-    \ifx&#1& % 判断是否有对齐参数
+    \ifx&#1& % 检测可选参数是否为空
         \centering
     \else
         \ifx#1l % 左对齐
@@ -405,18 +384,9 @@
     \fi 
 }
 
-\ifcase\myPageFormat
- %                         *****************
- %                         **   A4紧凑版   **
- %                         *****************
-    \if@printmode
-        \geometry{a4paper, twoside, left=18mm, right=18mm, top=25mm, bottom=25mm, headsep=5mm, bindingoffset = 1cm}
-    \else
-        \geometry{a4paper, left=18mm, right=18mm, top=25mm, bottom=25mm, headsep=5mm}   
-    \fi
-
-    % 自定义封面样式
-    \renewcommand{\maketitle}{
+% A4封面辅助命令（参数：#1 类型标签, #2 类型字号, #3 座右铭偏移）
+% 将 compact/standard/loose/single 四种 A4 布局的封面共用逻辑抽取为此命令
+\newcommand{\ExBook@coverA}[3]{%
     \begin{titlepage}
         \begin{tikzpicture}[remember picture, overlay]
             \node[anchor=north, inner sep=0pt] at (current page.north) {\includegraphics[width=\paperwidth, height=\paperheight, keepaspectratio]{\ExBook@value@coverImg}};
@@ -427,10 +397,9 @@
             \fill[themeColor!6.2] (current page.south west) rectangle ++(\paperwidth,2cm);
             \node[anchor=south, align=center] at ([yshift=0.8cm]current page.south) {\color{themeColor}\fontsize{16pt}{0}{\ExBook@value@Creator}};
             \node[anchor=south, align=center] at ([yshift=0.2cm]current page.south) {\color{themeColor}\fontsize{12pt}{0}{\ExBook@value@UpdateTime}};
-            \node[anchor=south, align=center] at ([yshift=2.5cm]current page.south) {\color{themeColor}\fontsize{12pt}{0}{\ExBook@value@motto}};
+            \node[anchor=south, align=center] at ([yshift=#3]current page.south) {\color{themeColor}\fontsize{12pt}{0}{\ExBook@value@motto}};
             \fill[themeColor!6.2, rounded corners=16pt] ([yshift=4cm, xshift=14cm]current page.south west) rectangle ++(5cm,2cm);
-            \node[anchor=south, align=center] at ([yshift=4.5cm, xshift=16.5cm]current page.south west) {\color{themeColor}\fontsize{22pt}{0}\ExBook@value@TypeOne};
-            
+            \node[anchor=south, align=center] at ([yshift=4.5cm, xshift=16.5cm]current page.south west) {\color{themeColor}\fontsize{#2}{0}#1};
             \if@online
                 \node[anchor=south, align=center] at ([yshift=5.5cm, xshift=4.5cm]current page.south west) {\color{themeColor}\fontsize{14pt}{0}\textbf{\kaishu 遇到录入错误，可查看：}};
                 \fill[themeColor!6.2, rounded corners=6pt] ([yshift=4.5cm, xshift=1.50cm]current page.south west) rectangle ++(7cm,1cm);
@@ -438,14 +407,32 @@
             \fi
         \end{tikzpicture}
     \end{titlepage}
-
     \if@printmode
-        \clearpage
-        \null
-        \thispagestyle{empty}
-        \clearpage
+        \clearpage\null\thispagestyle{empty}\clearpage
     \fi
-    }
+}
+
+% ============================================================
+% 页面布局切换（\ifcase\myPageFormat）
+%
+% case 0: A4紧凑版 —— 题目紧密排列，bbox 无间距
+% case 1: A4标准版 —— bbox 内 minipage + 2.5cm 底部间距
+% case 2: 横Pad版  —— 200x150mm，每页一题，TikZ 页眉
+% case 3: A4宽松版 —— bbox 内 minipage + 7.5cm 底部间距
+% case 4: A4单题版 —— 每页一题，自动 \newpage
+% case 5: 竖Pad版  —— 200x250mm，每页一题，TikZ 页眉
+% ============================================================
+\ifcase\myPageFormat
+ %                         *****************
+ %                         **   A4紧凑版   **
+ %                         *****************
+    \if@printmode
+        \geometry{a4paper, twoside, left=18mm, right=18mm, top=25mm, bottom=25mm, headsep=5mm, bindingoffset = 1cm}
+    \else
+        \geometry{a4paper, left=18mm, right=18mm, top=25mm, bottom=25mm, headsep=5mm}   
+    \fi
+
+    \renewcommand{\maketitle}{\ExBook@coverA{\ExBook@value@TypeOne}{22pt}{2.5cm}}
 
     % 启用自定义页眉
     \pagestyle{fancy}
@@ -499,35 +486,7 @@
         \geometry{a4paper, left=18mm, right=18mm, top=25mm, bottom=25mm, headsep=5mm}   
     \fi
 
-    % 自定义封面样式
-    \renewcommand{\maketitle}{
-    \begin{titlepage}
-        \begin{tikzpicture}[remember picture, overlay]
-            \node[anchor=north, inner sep=0pt] at (current page.north) {\includegraphics[width=\paperwidth, height=\paperheight, keepaspectratio]{\ExBook@value@coverImg}};
-            \fill[themeColor!6.2] ([yshift=2cm]current page.west) rectangle ++(\paperwidth,2cm);
-            \node[anchor=west, align=left, text width=\textwidth, inner sep=0] at ([yshift=3cm, xshift=1.5cm]current page.west) {\color{themeColor} \fontsize{24pt}{0}{\ExBook@value@PreTitle}};
-            \node[anchor=west, align=left, text width=\textwidth, inner sep=0] at ([yshift=0cm, xshift=1.5cm]current page.west) {\fontsize{36pt}{0}{\ExBook@value@Title}};
-            \node[anchor=west, align=left, text width=\textwidth, inner sep=0] at ([yshift=-1.8cm, xshift=1.5cm]current page.west) {\fontsize{32pt}{0}{\ExBook@value@TitleDescription}};
-            \fill[themeColor!6.2] (current page.south west) rectangle ++(\paperwidth,2cm);
-            \node[anchor=south, align=center] at ([yshift=0.8cm]current page.south) {\color{themeColor}\fontsize{16pt}{0}{\ExBook@value@Creator}};
-            \node[anchor=south, align=center] at ([yshift=0.2cm]current page.south) {\color{themeColor}\fontsize{12pt}{0}{\ExBook@value@UpdateTime}};
-            \node[anchor=south, align=center] at ([yshift=3cm]current page.south) {\color{themeColor}\fontsize{12pt}{0}{\ExBook@value@motto}};
-            \fill[themeColor!6.2, rounded corners=16pt] ([yshift=4cm, xshift=14cm]current page.south west) rectangle ++(5cm,2cm);
-            \node[anchor=south, align=center] at ([yshift=4.5cm, xshift=16.5cm]current page.south west) {\color{themeColor}\fontsize{24pt}{0}\ExBook@value@TypeTwo};
-            \if@online
-                \node[anchor=south, align=center] at ([yshift=5.5cm, xshift=4.5cm]current page.south west) {\color{themeColor}\fontsize{14pt}{0}\textbf{\kaishu 遇到录入错误，可查看：}};
-                \fill[themeColor!6.2, rounded corners=6pt] ([yshift=4.5cm, xshift=1.50cm]current page.south west) rectangle ++(7cm,1cm);
-                \node[anchor=south, align=center] at ([yshift=4.5cm, xshift=5.2cm]current page.south west) {\color{themeColor}\fontsize{16pt}{0}\textbf{\href{\ExBook@value@onlineCheckUrl}{在线勘误文档（\underline{点击跳转}）}}};
-            \fi
-        \end{tikzpicture}
-    \end{titlepage}
-    \if@printmode
-        \clearpage
-        \null
-        \thispagestyle{empty}
-        \clearpage
-    \fi
-    }
+    \renewcommand{\maketitle}{\ExBook@coverA{\ExBook@value@TypeTwo}{24pt}{3cm}}
 
     \pagestyle{fancy} % 启用自定义页眉
 
@@ -658,7 +617,9 @@
     \fi
 
 
-    % 在每页的页眉位置添加矩形
+% Pad 版使用自定义 TikZ 页眉替代 fancyhdr：
+% 左侧约 2/3 宽度为主题色矩形 + 公众号/标题信息
+% 右侧约 1/3 为三个渐变色装饰块 + 节/子节标记，底部主题色横线
     \chead{%
     \if@darkmode
     \begin{tikzpicture}[remember picture,overlay]
@@ -744,32 +705,7 @@
         \geometry{a4paper, left=18mm, right=18mm, top=25mm, bottom=25mm, headsep=5mm}   
     \fi
 
-    % 自定义封面样式
-    \renewcommand{\maketitle}{
-    \begin{titlepage}
-        
-        \begin{tikzpicture}[remember picture, overlay]
-            \node[anchor=north, inner sep=0pt] at (current page.north) {\includegraphics[width=\paperwidth, height=\paperheight, keepaspectratio]{\ExBook@value@coverImg}};
-            \fill[themeColor!6.2] ([yshift=2cm]current page.west) rectangle ++(\paperwidth,2cm);
-            \node[anchor=west, align=left, text width=\textwidth, inner sep=0] at ([yshift=3cm, xshift=1.5cm]current page.west) {\color{themeColor} \fontsize{24pt}{0}{\ExBook@value@PreTitle}};
-            \node[anchor=west, align=left, text width=\textwidth, inner sep=0] at ([yshift=0cm, xshift=1.5cm]current page.west) {\fontsize{36pt}{0}{\ExBook@value@Title}};
-            \node[anchor=west, align=left, text width=\textwidth, inner sep=0] at ([yshift=-1.8cm, xshift=1.5cm]current page.west) {\fontsize{32pt}{0}{\ExBook@value@TitleDescription}};
-            \fill[themeColor!6.2] (current page.south west) rectangle ++(\paperwidth,2cm);
-            \node[anchor=south, align=center] at ([yshift=0.8cm]current page.south) {\color{themeColor}\fontsize{16pt}{0}{\ExBook@value@Creator}};
-            \node[anchor=south, align=center] at ([yshift=0.2cm]current page.south) {\color{themeColor}\fontsize{12pt}{0}{\ExBook@value@UpdateTime}};
-
-            \node[anchor=south, align=center] at ([yshift=3cm]current page.south) {\color{themeColor}\fontsize{12pt}{0}{\ExBook@value@motto}};
-
-            \fill[themeColor!6.2, rounded corners=16pt] ([yshift=4cm, xshift=14cm]current page.south west) rectangle ++(5cm,2cm);
-            \node[anchor=south, align=center] at ([yshift=4.5cm, xshift=16.5cm]current page.south west) {\color{themeColor}\fontsize{24pt}{0}\ExBook@value@TypeFour}; 
-            \if@online
-                \node[anchor=south, align=center] at ([yshift=5.5cm, xshift=4.5cm]current page.south west) {\color{themeColor}\fontsize{14pt}{0}\textbf{\kaishu 遇到录入错误，可查看：}};
-                \fill[themeColor!6.2, rounded corners=6pt] ([yshift=4.5cm, xshift=1.50cm]current page.south west) rectangle ++(7cm,1cm);
-                \node[anchor=south, align=center] at ([yshift=4.5cm, xshift=5.2cm]current page.south west) {\color{themeColor}\fontsize{16pt}{0}\textbf{\href{\ExBook@value@onlineCheckUrl}{在线勘误文档（\underline{点击跳转}）}}};
-            \fi
-        \end{tikzpicture}
-    \end{titlepage}
-    }
+    \renewcommand{\maketitle}{\ExBook@coverA{\ExBook@value@TypeFour}{24pt}{3cm}}
 
     \pagestyle{fancy} % 启用自定义页眉
 
@@ -827,33 +763,7 @@
         \geometry{a4paper, left=18mm, right=18mm, top=25mm, bottom=25mm, headsep=5mm}   
     \fi
 
-    % 自定义封面样式
-    \renewcommand{\maketitle}{
-    \begin{titlepage}
-        \begin{tikzpicture}[remember picture, overlay]
-            \node[anchor=north, inner sep=0pt] at (current page.north) {\includegraphics[width=\paperwidth, height=\paperheight, keepaspectratio]{\ExBook@value@coverImg}};
-       
-            \fill[themeColor!6.2] ([yshift=2cm]current page.west) rectangle ++(\paperwidth,2cm);
-            \node[anchor=west, align=left, text width=\textwidth, inner sep=0] at ([yshift=3cm, xshift=1.5cm]current page.west) {\color{themeColor} \fontsize{24pt}{0}{\ExBook@value@PreTitle}};
-            \node[anchor=west, align=left, text width=\textwidth, inner sep=0] at ([yshift=0cm, xshift=1.5cm]current page.west) {\fontsize{36pt}{0}{\ExBook@value@Title}};
-            \node[anchor=west, align=left, text width=\textwidth, inner sep=0] at ([yshift=-1.8cm, xshift=1.5cm]current page.west) {\fontsize{32pt}{0}{\ExBook@value@TitleDescription}};
-            \fill[themeColor!6.2] (current page.south west) rectangle ++(\paperwidth,2cm);
-            \node[anchor=south, align=center] at ([yshift=0.8cm]current page.south) {\color{themeColor}\fontsize{16pt}{0}{\ExBook@value@Creator}};
-            \node[anchor=south, align=center] at ([yshift=0.2cm]current page.south) {\color{themeColor}\fontsize{12pt}{0}{\ExBook@value@UpdateTime}};
-        
-            \node[anchor=south, align=center] at ([yshift=3cm]current page.south) {\color{themeColor}\fontsize{12pt}{0}{\ExBook@value@motto}};
-        
-            \fill[themeColor!6.2, rounded corners=16pt] ([yshift=4cm, xshift=14cm]current page.south west) rectangle ++(5cm,2cm);
-            \node[anchor=south, align=center] at ([yshift=4.5cm, xshift=16.5cm]current page.south west) {\color{themeColor}\fontsize{24pt}{0}\ExBook@value@TypeFive};
-        
-            \if@online
-                \node[anchor=south, align=center] at ([yshift=5.5cm, xshift=4.5cm]current page.south west) {\color{themeColor}\fontsize{14pt}{0}\textbf{\kaishu 遇到录入错误，可查看：}};
-                \fill[themeColor!6.2, rounded corners=6pt] ([yshift=4.5cm, xshift=1.50cm]current page.south west) rectangle ++(7cm,1cm);
-                \node[anchor=south, align=center] at ([yshift=4.5cm, xshift=5.2cm]current page.south west) {\color{themeColor}\fontsize{16pt}{0}\textbf{\href{\ExBook@value@onlineCheckUrl}{在线勘误文档（\underline{点击跳转}）}}};
-            \fi
-        \end{tikzpicture}
-    \end{titlepage}
-    }
+    \renewcommand{\maketitle}{\ExBook@coverA{\ExBook@value@TypeFive}{24pt}{3cm}}
 
     \pagestyle{fancy} % 启用自定义页眉
 
@@ -1067,6 +977,17 @@
 %                         *****************
 %                         **   题目相关   **
 %                         *****************
+% ============================================================
+% 题目系统
+%
+% qitems 环境通过 xkeyval 支持键值选项：
+%   unreset     —— 不重置题号计数器
+%   unshow      —— 隐藏题号
+%   showanalysis—— 显示解析
+%   prefix/suffix —— 题号前后缀（默认空/ .）
+%   optprefix/optsuffix —— 选项标签前后缀（默认空/ .）
+%   startnum    —— 起始题号
+% ============================================================
 \makeatletter % 开启@命令定义权限（关键：添加此行）
 \newcounter{QuestionCounter}
 
@@ -1135,7 +1056,8 @@
     \fi
 }
 
-% 解析环境（完全受qitems环境的开关控制）
+% 解析环境：当 \if@showanalysis 为假时，将内容吸入 \box0 而
+% 不输出，实现「零成本」隐藏解析（比 comment 宏包更可靠）。
 \newenvironment{analysis}[1][解析：]{
     \par
     \if@showanalysis % 读取qitems环境设置的开关状态
@@ -1199,7 +1121,15 @@
 % 定义新增小问命令
 \newcommand{\subqitem}{\item} 
 
-% 选择题选项自动排版参考了 BHCexam.cls 的实现
+% ============================================================
+% 选择题选项自动排版
+%
+% 算法：测量每个选项宽度取最大值 \maxlength，按阈值分行：
+%   \maxlength > 0.4\linewidth → 单列（每行一个选项）
+%   \maxlength > 0.2\linewidth → 双列
+%   否则 → 四列（三选项为三列）
+% 参考了 BHCexam.cls 的实现。
+% ============================================================
 \newlength{\choicelengtha}
 \newlength{\choicelengthb}
 \newlength{\choicelengthc}
@@ -1338,7 +1268,7 @@
 	\settowidth{\choicelengthc}{\@optprefix C\@optsuffix~#3~~~}
 	\settowidth{\choicelengthd}{\@optprefix D\@optsuffix~#4~~~}
 	\settowidth{\choicelengthe}{\@optprefix E\@optsuffix~#5~~~}
-	\ifthenelse{\lengthtest{\choicelengtha>\choicelengthb}}{\setlength{\maxlength}{\choicelengtha}}{\setlength{\maxlength}{\choice(l)ngthb}}
+	\ifthenelse{\lengthtest{\choicelengtha>\choicelengthb}}{\setlength{\maxlength}{\choicelengtha}}{\setlength{\maxlength}{\choicelengthb}}
 	\ifthenelse{\lengthtest{\choicelengthc>\maxlength}}{\setlength{\maxlength}{\choicelengthc}}{}
 	\ifthenelse{\lengthtest{\choicelengthd>\maxlength}}{\setlength{\maxlength}{\choicelengthd}}{}	\ifthenelse{\lengthtest{\choicelengthe>\maxlength}}{\setlength{\maxlength}{\choicelengthe}}{}
 	
@@ -1368,7 +1298,7 @@
 			\begin{tabularx}{\linewidth}{XXXX}
 				\setlength\tabcolsep{0pt}
 				\@optprefix A\@optsuffix~#1~~~  & \@optprefix B\@optsuffix~#2~~~ & \@optprefix C\@optsuffix~#3~~~ & \@optprefix D\@optsuffix~#4~~~ \\
-				\@optprefix E\@optsuffix~#2~~~  & \@optprefix F\@optsuffix~#6~~~ &          &          \\
+				\@optprefix E\@optsuffix~#5~~~  & \@optprefix F\@optsuffix~#6~~~ &          &          \\
 			\end{tabularx}
 		}%
 	}

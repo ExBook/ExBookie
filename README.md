@@ -67,6 +67,18 @@
 
 注意：使用此项目需要一点 Latex 基础！
 
+本地编译推荐使用 `latexmk`，项目根目录已提供 `.latexmkrc` 配置文件：
+```bash
+# 编译示例文档
+latexmk example_text_type.tex
+# 清理辅助文件
+latexmk -c
+```
+也可直接使用 `xelatex`：
+```bash
+xelatex example_text_type.tex
+```
+
 # 文档类参考
 
 ## 文档类选项
