@@ -1,15 +1,14 @@
-![](./README.IMAGE/logo-header.png)
-
----
-
+<div align="center">
+  <img src="./logo.svg" alt="ExBookie" width="380">
+</div>
 
 <div align="center">
-<img src="https://img.shields.io/github/languages/code-size/ExBook/ExBook" alt="code-size" />
+<img src="https://img.shields.io/github/languages/code-size/ExBook/ExBookie" alt="code-size" />
     <img src="https://img.shields.io/badge/Author-ExBook-orange" alt="Author" />
     </br>
-    <img src="https://img.shields.io/github/languages/top/ExBook/ExBook?color=yellow" alt="languages-top" />
-    <img src="https://img.shields.io/github/last-commit/ExBook/ExBook" alt="last-commit" />
-    <img src="https://img.shields.io/github/languages/count/ExBook/ExBook" alt="languages-count" />
+    <img src="https://img.shields.io/github/languages/top/ExBook/ExBookie?color=yellow" alt="languages-top" />
+    <img src="https://img.shields.io/github/last-commit/ExBook/ExBookie" alt="last-commit" />
+    <img src="https://img.shields.io/github/languages/count/ExBook/ExBookie" alt="languages-count" />
 </div>
 
 <div align="center">
