@@ -13,8 +13,7 @@ ExBookie 是一个 LaTeX 文档类（`ExBook.cls`），一次录入题目，通�
 ### 第一步：确认使用环境
 
 询问用户：
-1. 使用 Overleaf（在线）还是本地？
-2. 如果在本地，确认已安装 TeXLive（含 `xelatex` 和 `latexmk`）
+确认用户已安装 TeXLive（含 `xelatex` 和 `latexmk`）
 
 ### 第二步：选择版式（必选，默认 `standard`）
 
@@ -190,7 +189,6 @@ latexmk example_text_type.tex    # 编译
 latexmk -c                       # 清理
 ```
 
-Overleaf 用户直接在平台编译即可。
 
 ## 给 AI 助手的交互原则
 
