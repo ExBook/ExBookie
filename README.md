@@ -122,7 +122,7 @@ xelatex example_text_type.tex
 \motto{你这个年龄是怎么睡得着觉的} % 封面座右铭
 \Creator{研小布} % 制作人
 \UpdateTime{\today} % 更新时间
-\OnlineCheckUrl{https://github.com/ExBook/ExBook} % 在线勘误文档地址
+\OnlineCheckUrl{https://github.com/ExBook/ExBookie} % 在线勘误文档地址
 ```
 说明如下：
 ![](./README.IMAGE/3.png)
